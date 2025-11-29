@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Mahasiswa;
 use Illuminate\Http\Request;
+use Yajra\DataTables\Facades\DataTables;
 
 class MahasiswaController extends Controller
 {
@@ -14,9 +15,24 @@ class MahasiswaController extends Controller
      */
     public function index()
 {
-    $data = Mahasiswa::all();
-    return view('mahasiswa.index', compact('data'));
+        return view('mahasiswa.index');
 }
+
+    public function data(Request $request)
+    {
+        $data = Mahasiswa::select('*');
+
+        return DataTables::of($data)
+            ->addIndexColumn()
+            ->addColumn('aksi', function ($row) {
+                return '
+                <button class="btn btn-sm btn-warning editBtn" data-id="' . $row->id . '">Edit</button>
+                <button class="btn btn-sm btn-danger deleteBtn" data-id="' . $row->id . '">Delete</button>
+            ';
+            })
+            ->rawColumns(['aksi'])
+            ->make(true);
+    }
 
 
     /**
@@ -26,7 +42,7 @@ class MahasiswaController extends Controller
      */
     public function create()
     {
-        //
+        return view('mahasiswa.create');
     }
 
     /**
@@ -37,12 +53,7 @@ class MahasiswaController extends Controller
      */
    public function store(Request $request)
 {
-    Mahasiswa::create([
-        'nama' => $request->nama,
-        'nim' => $request->nim,
-        'jurusan' => $request->jurusan
-    ]);
-
+    Mahasiswa::create($request->all());
     return redirect()->route('mahasiswa.index');
 }
 

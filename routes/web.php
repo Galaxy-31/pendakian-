@@ -29,10 +29,11 @@ Route::middleware('auth')->group(function () {
 
     // hanya admin yang bisa akses
     Route::middleware('role:Admin')->group(function () {
-
+        
+        Route::resource('mahasiswa', MahasiswaController::class);
+        Route::get('/mahasiswa/data', [MahasiswaController::class, 'data'])->name('mahasiswa.data');
         Route::get('/admin', function () {
             return view('vendor.laratrust.admin');
-            Route::resource('mahasiswa', MahasiswaController::class);
         })->name('admin');
 
     });
